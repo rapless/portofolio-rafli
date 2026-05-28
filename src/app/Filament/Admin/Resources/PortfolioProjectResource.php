@@ -18,30 +18,73 @@ class PortfolioProjectResource extends Resource
 
     protected static ?string $navigationGroup = 'Portfolio Content';
 
-    protected static ?string $navigationLabel = 'Projects';
+    protected static ?string $navigationLabel = 'Featured Work';
+
+    protected static ?string $modelLabel = 'Featured Work Project';
+
+    protected static ?string $pluralModelLabel = 'Featured Work Projects';
 
     protected static ?int $navigationSort = 3;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return true;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return true;
+    }
+
+    public static function canCreate(): bool
+    {
+        return true;
+    }
+
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return true;
+    }
+
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return true;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return true;
+    }
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('Project')
+            Forms\Components\Section::make('Featured Work Project')
                 ->columns(2)
                 ->schema([
-                    Forms\Components\TextInput::make('title')->required()->maxLength(255)->columnSpanFull(),
-                    Forms\Components\Textarea::make('description')->rows(4)->columnSpanFull(),
+                    Forms\Components\TextInput::make('title')
+                        ->label('Nama Project')
+                        ->required()
+                        ->maxLength(255)
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('description')
+                        ->label('Deskripsi Project')
+                        ->rows(5)
+                        ->required()
+                        ->columnSpanFull(),
                     Forms\Components\FileUpload::make('image_path')
+                        ->label('Gambar Project')
                         ->image()
                         ->directory('portfolio/projects')
                         ->visibility('public')
                         ->imageEditor()
                         ->columnSpanFull(),
-                    Forms\Components\TextInput::make('project_url')->url()->maxLength(255),
-                    Forms\Components\TextInput::make('repository_url')->url()->maxLength(255),
-                    Forms\Components\TagsInput::make('technologies')->placeholder('Laravel')->columnSpanFull(),
-                    Forms\Components\TextInput::make('sort_order')->numeric()->default(0),
-                    Forms\Components\Toggle::make('is_featured')->default(true),
-                    Forms\Components\Toggle::make('is_enabled')->default(true),
+                    Forms\Components\TextInput::make('project_url')->label('Live Preview URL')->url()->maxLength(255),
+                    Forms\Components\TextInput::make('repository_url')->label('Repository URL')->url()->maxLength(255),
+                    Forms\Components\TagsInput::make('technologies')->label('Technology / Tags')->placeholder('Laravel')->columnSpanFull(),
+                    Forms\Components\TextInput::make('sort_order')->label('Urutan Tampil')->numeric()->default(0),
+                    Forms\Components\Toggle::make('is_featured')->label('Tampilkan Badge Featured')->default(true),
+                    Forms\Components\Toggle::make('is_enabled')->label('Tampilkan di Frontend')->default(true),
                 ]),
         ]);
     }
@@ -59,8 +102,8 @@ class PortfolioProjectResource extends Resource
                 Tables\Columns\TextColumn::make('sort_order')->sortable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()->label('Edit'),
+                Tables\Actions\DeleteAction::make()->label('Hapus'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

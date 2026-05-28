@@ -16,11 +16,7 @@ return new class extends Migration
             $table->string('status')->default('new');
             $table->string('ip_address')->nullable();
             $table->text('user_agent')->nullable();
-            $table->timestamp('read_at')->nullable();
             $table->timestamps();
-
-            $table->index(['status', 'created_at']);
-            $table->index('email');
         });
     }
 

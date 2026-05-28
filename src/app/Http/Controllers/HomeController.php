@@ -33,6 +33,7 @@ class HomeController extends Controller
         $projects = PortfolioProject::query()
             ->where('is_enabled', true)
             ->orderBy('sort_order')
+            ->orderByDesc('created_at')
             ->get();
 
         $links = PortfolioLink::query()
@@ -48,12 +49,12 @@ class HomeController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
-            'email' => ['required', 'email:rfc', 'max:180'],
-            'message' => ['required', 'string', 'min:5', 'max:3000'],
+            'email' => ['required', 'email', 'max:180'],
+            'message' => ['required', 'string', 'min:5', 'max:5000'],
         ], [
             'name.required' => 'Nama wajib diisi.',
             'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email belum benar.',
+            'email.email' => 'Format email belum valid.',
             'message.required' => 'Pesan wajib diisi.',
             'message.min' => 'Pesan terlalu pendek.',
         ]);
@@ -62,7 +63,7 @@ class HomeController extends Controller
             ...$validated,
             'status' => 'new',
             'ip_address' => $request->ip(),
-            'user_agent' => (string) $request->userAgent(),
+            'user_agent' => $request->userAgent(),
         ]);
 
         return back()->with('contact_success', 'Pesan kamu sudah terkirim. Terima kasih!');

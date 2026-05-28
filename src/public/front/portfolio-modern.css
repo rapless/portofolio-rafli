@@ -622,83 +622,51 @@ h3 {
     }
 }
 
+/* Contact CMS form */
 .contact-layout {
     display: grid;
     grid-template-columns: minmax(0, .9fr) minmax(320px, 1.1fr);
-    gap: clamp(22px, 5vw, 54px);
+    gap: 28px;
     align-items: stretch;
-    border: 1px solid rgba(255,255,255,.13);
-    background: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.055));
-    backdrop-filter: blur(24px);
-    box-shadow: 0 24px 90px rgba(0,0,0,.32);
-    border-radius: 34px;
-    padding: clamp(24px, 5vw, 54px);
-    position: relative;
-    overflow: hidden;
 }
 
-.contact-layout::before {
-    content: "";
-    position: absolute;
-    inset: -35% auto auto -10%;
-    width: 420px;
-    height: 420px;
-    border-radius: 999px;
-    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 42%, transparent), transparent 70%);
-    pointer-events: none;
-}
-
-.contact-copy,
+.contact-layout .contact-card,
 .contact-form {
-    position: relative;
-}
-
-.contact-copy h2 {
-    margin-bottom: 20px;
-}
-
-.contact-description {
-    margin-top: 22px;
-}
-
-.contact-email {
-    display: inline-flex;
-    margin-top: 28px;
-    color: color-mix(in srgb, var(--accent) 48%, #fff);
-    font-weight: 900;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 32px;
+    background: linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.045));
+    box-shadow: 0 26px 80px rgba(0, 0, 0, .25);
+    backdrop-filter: blur(18px);
 }
 
 .contact-form {
     display: grid;
-    gap: 16px;
-    padding: clamp(18px, 3vw, 30px);
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 28px;
-    background: rgba(8, 10, 22, .42);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    gap: 18px;
+    padding: clamp(24px, 4vw, 40px);
+}
+
+.contact-form h3 {
+    margin: 0;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
 }
 
 .contact-form label {
     display: grid;
     gap: 8px;
-}
-
-.contact-form span {
     color: rgba(255,255,255,.78);
-    font-size: .86rem;
-    font-weight: 900;
+    font-weight: 700;
 }
 
 .contact-form input,
 .contact-form textarea {
     width: 100%;
-    color: #fff;
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.14);
     border-radius: 18px;
-    outline: none;
-    padding: 14px 16px;
+    background: rgba(6, 8, 20, .56);
+    color: #fff;
     font: inherit;
+    outline: none;
+    padding: 15px 16px;
     transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
@@ -707,52 +675,41 @@ h3 {
     min-height: 150px;
 }
 
-.contact-form input::placeholder,
-.contact-form textarea::placeholder {
-    color: rgba(255,255,255,.38);
-}
-
 .contact-form input:focus,
 .contact-form textarea:focus {
-    border-color: color-mix(in srgb, var(--accent) 70%, #fff);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
-    background: rgba(255,255,255,.105);
+    border-color: color-mix(in srgb, var(--accent), white 18%);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent), transparent 75%);
+    background: rgba(6, 8, 20, .76);
 }
 
 .contact-form small {
-    color: #fecaca;
+    color: #fca5a5;
     font-weight: 700;
 }
 
 .form-alert {
-    display: grid;
-    gap: 4px;
     border-radius: 18px;
     padding: 14px 16px;
-    font-size: .92rem;
-    line-height: 1.5;
+    font-weight: 800;
 }
 
-.form-alert-success {
-    color: #dcfce7;
-    background: rgba(34, 197, 94, .15);
-    border: 1px solid rgba(134, 239, 172, .26);
+.form-alert.success {
+    border: 1px solid rgba(34, 197, 94, .28);
+    background: rgba(34, 197, 94, .13);
+    color: #bbf7d0;
 }
 
-.form-alert-error {
-    color: #fee2e2;
-    background: rgba(239, 68, 68, .13);
-    border: 1px solid rgba(252, 165, 165, .24);
+.form-alert.error {
+    border: 1px solid rgba(248, 113, 113, .28);
+    background: rgba(248, 113, 113, .13);
+    color: #fecaca;
 }
 
-.form-submit {
-    width: 100%;
-    border: 0;
-    cursor: pointer;
-    margin-top: 4px;
+.contact-description {
+    margin-top: 18px;
 }
 
-@media (max-width: 920px) {
+@media (max-width: 900px) {
     .contact-layout {
         grid-template-columns: 1fr;
     }

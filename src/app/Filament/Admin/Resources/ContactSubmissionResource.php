@@ -10,29 +10,64 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class ContactSubmissionResource extends Resource
 {
     protected static ?string $model = ContactSubmission::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
 
     protected static ?string $navigationGroup = 'Portfolio Content';
 
     protected static ?string $navigationLabel = 'Contact Messages';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?string $modelLabel = 'Contact Message';
+
+    protected static ?string $pluralModelLabel = 'Contact Messages';
+
+    protected static ?int $navigationSort = 4;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return true;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return true;
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return true;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return true;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return true;
+    }
 
     public static function getNavigationBadge(): ?string
     {
-        $count = ContactSubmission::query()->where('status', 'new')->count();
+        $count = static::getModel()::query()->where('status', 'new')->count();
 
         return $count > 0 ? (string) $count : null;
     }
 
-    public static function getNavigationBadgeColor(): ?string
+    public static function getEloquentQuery(): Builder
     {
-        return 'danger';
+        return parent::getEloquentQuery()->latest();
     }
 
     public static function form(Form $form): Form
@@ -41,19 +76,9 @@ class ContactSubmissionResource extends Resource
             Forms\Components\Section::make('Visitor Message')
                 ->columns(2)
                 ->schema([
-                    Forms\Components\TextInput::make('name')
-                        ->label('Visitor Name')
-                        ->disabled()
-                        ->dehydrated(false),
-                    Forms\Components\TextInput::make('email')
-                        ->label('Visitor Email')
-                        ->disabled()
-                        ->dehydrated(false),
-                    Forms\Components\Textarea::make('message')
-                        ->rows(8)
-                        ->columnSpanFull()
-                        ->disabled()
-                        ->dehydrated(false),
+                    Forms\Components\TextInput::make('name')->label('Nama')->disabled(),
+                    Forms\Components\TextInput::make('email')->label('Email')->disabled(),
+                    Forms\Components\Textarea::make('message')->label('Pesan')->rows(8)->disabled()->columnSpanFull(),
                     Forms\Components\Select::make('status')
                         ->options([
                             'new' => 'New',
@@ -62,17 +87,6 @@ class ContactSubmissionResource extends Resource
                             'archived' => 'Archived',
                         ])
                         ->required(),
-                    Forms\Components\DateTimePicker::make('read_at')
-                        ->disabled()
-                        ->dehydrated(false),
-                    Forms\Components\TextInput::make('ip_address')
-                        ->disabled()
-                        ->dehydrated(false),
-                    Forms\Components\Textarea::make('user_agent')
-                        ->rows(3)
-                        ->columnSpanFull()
-                        ->disabled()
-                        ->dehydrated(false),
                 ]),
         ]);
     }
@@ -80,40 +94,30 @@ class ContactSubmissionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at', 'desc')
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('email')->searchable()->copyable(),
-                Tables\Columns\TextColumn::make('message')->limit(70)->searchable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'new' => 'danger',
-                        'read' => 'warning',
-                        'replied' => 'success',
-                        default => 'gray',
-                    })
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')->label('Received')->since()->sortable(),
+                Tables\Columns\TextColumn::make('name')->label('Nama')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('email')->label('Email')->searchable(),
+                Tables\Columns\TextColumn::make('message')->label('Pesan')->limit(60)->wrap(),
+                Tables\Columns\TextColumn::make('status')->badge()->colors([
+                    'danger' => 'new',
+                    'warning' => 'read',
+                    'success' => 'replied',
+                    'gray' => 'archived',
+                ])->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->label('Masuk')->dateTime('d M Y H:i')->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')->options([
-                    'new' => 'New',
-                    'read' => 'Read',
-                    'replied' => 'Replied',
-                    'archived' => 'Archived',
-                ]),
-                Tables\Filters\Filter::make('unread')
-                    ->query(fn (Builder $query): Builder => $query->where('status', 'new')),
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'new' => 'New',
+                        'read' => 'Read',
+                        'replied' => 'Replied',
+                        'archived' => 'Archived',
+                    ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\Action::make('mark_replied')
-                    ->label('Mark Replied')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->action(fn (ContactSubmission $record) => $record->update(['status' => 'replied', 'read_at' => $record->read_at ?? now()])),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()->label('Buka'),
+                Tables\Actions\DeleteAction::make()->label('Hapus'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -122,16 +126,11 @@ class ContactSubmissionResource extends Resource
             ]);
     }
 
-    public static function canCreate(): bool
-    {
-        return false;
-    }
-
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListContactSubmissions::route('/'),
-            'view' => Pages\ViewContactSubmission::route('/{record}'),
+            'edit' => Pages\EditContactSubmission::route('/{record}/edit'),
         ];
     }
 }

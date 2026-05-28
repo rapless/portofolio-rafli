@@ -22,6 +22,37 @@ class PortfolioSettingResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return true;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return true;
+    }
+
+    public static function canCreate(): bool
+    {
+        return true;
+    }
+
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return true;
+    }
+
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return true;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return true;
+    }
+
+
     public static function form(Form $form): Form
     {
         return $form->schema([

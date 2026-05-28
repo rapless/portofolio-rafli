@@ -54,36 +54,3 @@ php artisan serve
 ## Catatan
 
 Upload gambar dari admin disimpan ke disk public Laravel. Pastikan `php artisan storage:link` sudah jalan supaya gambar muncul di frontend.
-
-## Update CMS Portfolio + Contact Form
-
-Versi ini menambahkan alur yang kamu minta:
-
-- Nama, headline, deskripsi hero, foto profile, dan highlight profile bisa diedit dari **Portfolio Content > Sections > home**.
-- Bagian **About Me** bisa diedit penuh dari **Portfolio Content > Sections > about**, termasuk foto, rich text, dan skill/tag.
-- Bagian **Featured Work** bisa ditambah, edit, hide/show, atau hapus lewat **Portfolio Content > Projects**.
-- Bagian **Contact** sekarang memakai form visitor: nama, email, dan pesan.
-- Semua pesan visitor tersimpan di database dan bisa dibaca dari **Portfolio Content > Contact Messages**.
-- Deskripsi/title/button di contact section bisa diedit lewat **Portfolio Content > Sections > contact**.
-
-Setelah paste update ini, jalankan dari folder root project:
-
-```bash
-docker compose exec php bash
-cd /var/www/html
-php artisan migrate --seed
-php artisan storage:link
-php artisan optimize:clear
-php artisan filament:clear-cached-components
-```
-
-Kalau database masih boleh direset total:
-
-```bash
-php artisan migrate:fresh --seed
-php artisan storage:link
-php artisan optimize:clear
-php artisan filament:clear-cached-components
-```
-
-Catatan: upload foto dari Filament akan masuk ke storage publik. Pastikan `php artisan storage:link` sudah berhasil.

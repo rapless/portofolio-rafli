@@ -16,20 +16,5 @@ class ContactSubmission extends Model
         'status',
         'ip_address',
         'user_agent',
-        'read_at',
     ];
-
-    protected $casts = [
-        'read_at' => 'datetime',
-    ];
-
-    public function markAsRead(): void
-    {
-        if ($this->read_at === null) {
-            $this->forceFill([
-                'status' => 'read',
-                'read_at' => now(),
-            ])->save();
-        }
-    }
 }

@@ -96,9 +96,9 @@
                         </div>
                     @endif
                     <div>
-                        <p class="card-kicker">{{ data_get($home?->metadata, 'profile_kicker', 'Available for') }}</p>
-                        <h2>{{ data_get($home?->metadata, 'profile_headline', 'Web App · Laravel · UI Build') }}</h2>
-                        <p>{{ data_get($home?->metadata, 'profile_description', 'Konten halaman ini sepenuhnya bisa kamu edit dari admin panel.') }}</p>
+                        <p class="card-kicker">Available for</p>
+                        <h2>Web App · Laravel · UI Build</h2>
+                        <p>Konten halaman ini sepenuhnya bisa kamu edit dari admin panel.</p>
                     </div>
                 </div>
             </div>
@@ -187,10 +187,10 @@
 
         <section id="contact" class="contact section-shell">
             <div class="contact-layout reveal">
-                <div class="contact-copy">
+                <div class="contact-card">
                     <p class="eyebrow">{{ $contact?->eyebrow ?: 'Contact' }}</p>
                     <h2>{{ $contact?->title ?: "Let's Work Together" }}</h2>
-                    <p>{{ $contact?->subtitle ?: 'Kirim nama, email, dan pesan kamu. Semua pesan akan masuk ke admin panel.' }}</p>
+                    <p>{{ $contact?->subtitle ?: 'Hubungi saya untuk kolaborasi atau project baru.' }}</p>
 
                     @if ($contact?->content)
                         <div class="rich-text contact-description">
@@ -198,9 +198,14 @@
                         </div>
                     @endif
 
-                    @if ($setting('contact_email'))
-                        <a href="mailto:{{ $setting('contact_email') }}" class="contact-email">{{ $setting('contact_email') }}</a>
-                    @endif
+                    <div class="contact-actions">
+                        @if ($setting('contact_email'))
+                            <a href="mailto:{{ $setting('contact_email') }}" class="button button-ghost">{{ $setting('contact_email') }}</a>
+                        @endif
+                        @if ($setting('contact_whatsapp'))
+                            <a href="{{ $setting('contact_whatsapp') }}" target="_blank" rel="noopener" class="button button-ghost">WhatsApp</a>
+                        @endif
+                    </div>
 
                     @if ($socialLinks->isNotEmpty() || $contactLinks->isNotEmpty())
                         <div class="social-row">
@@ -216,45 +221,37 @@
                     @endif
                 </div>
 
-                <form action="{{ route('contact.submit') }}" method="POST" class="contact-form" novalidate>
+                <form class="contact-form" method="POST" action="{{ route('contact.submit') }}">
                     @csrf
+                    <h3>Kirim Pesan</h3>
 
                     @if (session('contact_success'))
-                        <div class="form-alert form-alert-success">{{ session('contact_success') }}</div>
+                        <div class="form-alert success">{{ session('contact_success') }}</div>
                     @endif
 
                     @if ($errors->any())
-                        <div class="form-alert form-alert-error">
-                            <strong>Pesannya belum bisa dikirim.</strong>
-                            <span>Cek lagi field yang ditandai ya.</span>
-                        </div>
+                        <div class="form-alert error">Cek lagi input kamu ya, ada yang belum valid.</div>
                     @endif
 
                     <label>
                         <span>Nama</span>
                         <input type="text" name="name" value="{{ old('name') }}" placeholder="Nama kamu" required>
-                        @error('name')
-                            <small>{{ $message }}</small>
-                        @enderror
+                        @error('name') <small>{{ $message }}</small> @enderror
                     </label>
 
                     <label>
                         <span>Email</span>
                         <input type="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com" required>
-                        @error('email')
-                            <small>{{ $message }}</small>
-                        @enderror
+                        @error('email') <small>{{ $message }}</small> @enderror
                     </label>
 
                     <label>
                         <span>Pesan</span>
-                        <textarea name="message" rows="6" placeholder="Tulis pesan kamu di sini..." required>{{ old('message') }}</textarea>
-                        @error('message')
-                            <small>{{ $message }}</small>
-                        @enderror
+                        <textarea name="message" rows="6" placeholder="Tulis pesan kamu..." required>{{ old('message') }}</textarea>
+                        @error('message') <small>{{ $message }}</small> @enderror
                     </label>
 
-                    <button type="submit" class="button button-primary form-submit">
+                    <button type="submit" class="button button-primary">
                         {{ $contact?->button_label ?: 'Kirim Pesan' }}
                     </button>
                 </form>
