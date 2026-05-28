@@ -1,194 +1,278 @@
+@php
+    $setting = fn (string $key, mixed $default = null) => $settings->get($key, $default);
+    $home = $sections->get('home');
+    $about = $sections->get('about');
+    $portfolio = $sections->get('portfolio');
+    $contact = $sections->get('contact');
+    $navLinks = $links->get('navigation', collect([
+        (object) ['label' => 'Home', 'url' => '#home'],
+        (object) ['label' => 'About', 'url' => '#about'],
+        (object) ['label' => 'Portfolio', 'url' => '#portfolio'],
+        (object) ['label' => 'Contact', 'url' => '#contact'],
+    ]));
+    $socialLinks = $links->get('social', collect());
+    $footerLinks = $links->get('footer', collect());
+    $contactLinks = $links->get('contact', collect());
+    $assetImage = function (?string $path) {
+        if (blank($path)) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        return asset(str_starts_with($path, 'storage/') ? $path : 'storage/' . $path);
+    };
+    $accentColor = $setting('accent_color', '#7c3aed');
+@endphp
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Shape - Creative Designer</title>
-    <link rel="stylesheet" href="{{ asset('front/templatemo-personal-style.css') }}">
-
-<!--
-
-TemplateMo 593 personal shape
-
-https://templatemo.com/tm-593-personal-shape
-
--->
+    <meta name="description" content="{{ $setting('meta_description', 'Portfolio digital yang dikelola secara dinamis lewat admin panel.') }}">
+    <title>{{ $setting('page_title', $setting('site_name', 'Portfolio')) }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('front/portfolio-modern.css') }}">
+    <style>
+        :root { --accent: {{ $accentColor }}; }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav id="navbar">
-        <div class="nav-container">
-            <div class="logo">RYFDLLAH</div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#portfolio">Portfolio</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <div class="mobile-menu-toggle" id="mobileMenuToggle">
-                <div class="hamburger"></div>
-                <div class="hamburger"></div>
-                <div class="hamburger"></div>
-            </div>
+    <div class="page-noise" aria-hidden="true"></div>
+
+    <nav class="navbar" id="navbar">
+        <a href="#home" class="logo" aria-label="Back to home">{{ $setting('site_name', 'RYFDLLAH') }}</a>
+
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Open navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="nav-links" id="navLinks">
+            @foreach ($navLinks as $link)
+                <a href="{{ $link->url }}">{{ $link->label }}</a>
+            @endforeach
+            <a href="{{ $contact?->button_url ?: '#contact' }}" class="nav-cta">{{ $contact?->button_label ?: 'Contact Me' }}</a>
         </div>
     </nav>
 
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <ul class="mobile-nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#portfolio">Portfolio</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </div>
+    <main>
+        <section id="home" class="hero section-shell">
+            <div class="orb orb-one"></div>
+            <div class="orb orb-two"></div>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="floating-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-            <div class="shape shape-4"></div>
-            <div class="shape shape-5"></div>
-            <div class="shape shape-6"></div>
-        </div>
-        <div class="hero-content">
-            <div class="hero-subtitle">Portofolio</div>
-            <h1>RAFLY FADHILLAH</h1>
-            <p class="subtitle">Saya menciptakan pengalaman digital yang memikat, melibatkan, dan menginspirasi melalui desain yang cermat dan solusi inovatif.</p>
-            <a href="#portfolio" class="cta-button">NEXT</a>
-        </div>
-        <div class="scroll-indicator" onclick="document.getElementById('about').scrollIntoView()"></div>
-    </section>
+            <div class="hero-copy reveal">
+                <p class="eyebrow">{{ $home?->eyebrow ?: 'Portofolio' }}</p>
+                <h1>{{ $home?->title ?: 'RAFLY FADHILLAH' }}</h1>
+                <p class="hero-subtitle">{{ $home?->subtitle ?: 'Website portfolio dinamis berbasis Laravel dan Filament.' }}</p>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title fade-in">About Me</h2>
-            <div class="about-content">
-                <div class="about-image slide-in-left"></div>
-                <div class="about-text slide-in-right">
-                    <p>Saya merupakan mahasiswa jurusan Teknik Informatika yang memiliki ketertarikan pada pengembangan aplikasi web dan teknologi perangkat lunak. Selama perkuliahan, saya mempelajari dasar-dasar pemrograman, basis data, rekayasa perangkat lunak, serta pengembangan sistem berbasis web.</p>
-                    <p>Saya terbiasa menggunakan PHP khususnya framework Laravel, serta memahami konsep frontend seperti HTML, CSS, JavaScript, dan Blade template. Selain itu, saya juga memiliki pengalaman menggunakan database relasional seperti MySQL/MariaDB dan bekerja dengan lingkungan pengembangan berbasis Docker.</p>
-                    <p>Saya senang mempelajari teknologi baru, membangun proyek mandiri, dan terus mengembangkan kemampuan problem solving serta logika pemrograman. Portfolio ini dibuat sebagai dokumentasi perjalanan belajar dan proyek yang telah saya kerjakan selama menjadi mahasiswa Teknik Informatika.</p>
-                    <div class="skills">
-                        <span class="skill-tag">UI/UX Design</span>
-                        <span class="skill-tag">Web Development</span>
-                        <span class="skill-tag">Data base</span>
-                        <span class="skill-tag">Laravel</span>
-                        <span class="skill-tag">Design Systems</span>
+                <div class="hero-actions">
+                    <a href="{{ $home?->button_url ?: '#portfolio' }}" class="button button-primary">{{ $home?->button_label ?: 'Lihat Project' }}</a>
+                    <a href="#about" class="button button-ghost">Kenalan dulu</a>
+                </div>
+
+                @if (! empty($home?->items))
+                    <div class="hero-stack" aria-label="Main skills">
+                        @foreach ($home->items as $item)
+                            <span>{{ $item }}</span>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            <div class="hero-card reveal delay-1">
+                <div class="glass-card profile-card">
+                    @if ($assetImage($home?->image_path))
+                        <img src="{{ $assetImage($home?->image_path) }}" alt="{{ $home?->title }}" class="profile-image">
+                    @else
+                        <div class="profile-placeholder">
+                            <span>{{ collect(explode(' ', $home?->title ?: 'RF'))->map(fn ($word) => mb_substr($word, 0, 1))->take(2)->implode('') }}</span>
+                        </div>
+                    @endif
+                    <div>
+                        <p class="card-kicker">{{ data_get($home?->metadata, 'profile_kicker', 'Available for') }}</p>
+                        <h2>{{ data_get($home?->metadata, 'profile_headline', 'Web App · Laravel · UI Build') }}</h2>
+                        <p>{{ data_get($home?->metadata, 'profile_description', 'Konten halaman ini sepenuhnya bisa kamu edit dari admin panel.') }}</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Portfolio Section -->
-    <section id="portfolio" class="portfolio">
-        <div class="container">
-            <h2 class="section-title fade-in">Featured Work</h2>
+        <section id="about" class="about section-shell section-grid">
+            <div class="section-heading reveal">
+                <p class="eyebrow">{{ $about?->eyebrow ?: 'About' }}</p>
+                <h2>{{ $about?->title ?: 'About Me' }}</h2>
+                @if ($about?->subtitle)
+                    <p>{{ $about->subtitle }}</p>
+                @endif
+            </div>
+
+            <div class="about-panel reveal delay-1">
+                @if ($assetImage($about?->image_path))
+                    <img src="{{ $assetImage($about?->image_path) }}" alt="{{ $about?->title }}" class="about-image">
+                @endif
+
+                <div class="rich-text">
+                    {!! $about?->content ?: '<p>Tambahkan konten about dari admin panel.</p>' !!}
+                </div>
+
+                @if (! empty($about?->items))
+                    <div class="tag-cloud">
+                        @foreach ($about->items as $skill)
+                            <span>{{ $skill }}</span>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </section>
+
+        <section id="portfolio" class="portfolio section-shell">
+            <div class="section-heading centered reveal">
+                <p class="eyebrow">{{ $portfolio?->eyebrow ?: 'Projects' }}</p>
+                <h2>{{ $portfolio?->title ?: 'Featured Work' }}</h2>
+                <p>{{ $portfolio?->subtitle ?: 'Project yang muncul di sini bisa ditambah, diubah, dan disembunyikan lewat admin panel.' }}</p>
+            </div>
+
             <div class="portfolio-grid">
-                <div class="portfolio-item">
-                    <div class="portfolio-image"></div>
-                    <div class="portfolio-content">
-                        <h4>prensesi mahasiswa</h4>
-                        <p>membuat sebuah website yang menggunakan QR code dan Geotagging</p>
-                        <div class="portfolio-tech">
-                            <span class="tech-tag">React</span>
-                            <span class="tech-tag">Node.js</span>
-                            <span class="tech-tag">MongoDB</span>
-                            <span class="tech-tag">Stripe</span>
+                @forelse ($projects as $project)
+                    <article class="project-card reveal">
+                        <div class="project-media">
+                            @if ($assetImage($project->image_path))
+                                <img src="{{ $assetImage($project->image_path) }}" alt="{{ $project->title }}">
+                            @else
+                                <span>{{ mb_substr($project->title, 0, 1) }}</span>
+                            @endif
                         </div>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <div class="portfolio-image"></div>
-                    <div class="portfolio-content">
-                        <h4>Digital Marketing</h4>
-                        <p>Situs web pemasaran modern dengan animasi interaktif dan saluran konversi yang dioptimalkan. Dirancang untuk performa dan SEO maksimal.</p>
-                        <div class="portfolio-tech">
-                            <span class="tech-tag">Next.js</span>
-                            <span class="tech-tag">Framer Motion</span>
-                            <span class="tech-tag">Tailwind CSS</span>
-                            <span class="tech-tag">Vercel</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <div class="portfolio-image"></div>
-                    <div class="portfolio-content">
-                        <h4>Creative Portfolio</h4>
-                        <p>Artistic portfolio website featuring immersive galleries, smooth transitions, and creative storytelling for a digital artist.</p>
-                        <div class="portfolio-tech">
-                            <span class="tech-tag">React</span>
-                            <span class="tech-tag">Three.js</span>
-                            <span class="tech-tag">GSAP</span>
-                            <span class="tech-tag">WebGL</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                        <div class="project-content">
+                            <div class="project-title-row">
+                                <h3>{{ $project->title }}</h3>
+                                @if ($project->is_featured)
+                                    <span class="featured-pill">Featured</span>
+                                @endif
+                            </div>
+                            <p>{{ $project->description }}</p>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="contact-floating-shapes">
-            <div class="contact-shape contact-shape-1"></div>
-            <div class="contact-shape contact-shape-2"></div>
-            <div class="contact-shape contact-shape-3"></div>
-            <div class="contact-shape contact-shape-4"></div>
-            <div class="contact-shape contact-shape-5"></div>
-            <div class="contact-shape contact-shape-6"></div>
-        </div>
-        <div class="container">
-            <div class="contact-content">
-                <h2 class="section-title fade-in">Let's Work Together</h2>
-                <p class="fade-in">Ready to bring your vision to life? Let's discuss how we can create something amazing together. I'm always excited to take on new challenges and collaborate on innovative projects.</p>
-                <form class="contact-form fade-in">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" placeholder="Your full name" required>
+                            @if (! empty($project->technologies))
+                                <div class="tech-list">
+                                    @foreach ($project->technologies as $tech)
+                                        <span>{{ $tech }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            <div class="project-actions">
+                                @if ($project->project_url)
+                                    <a href="{{ $project->project_url }}" target="_blank" rel="noopener">Live Preview</a>
+                                @endif
+                                @if ($project->repository_url)
+                                    <a href="{{ $project->repository_url }}" target="_blank" rel="noopener">Repository</a>
+                                @endif
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                    </article>
+                @empty
+                    <div class="empty-state reveal">
+                        <h3>Belum ada project</h3>
+                        <p>Masuk ke admin panel lalu tambahkan project baru.</p>
+                    </div>
+                @endforelse
+            </div>
+        </section>
+
+        <section id="contact" class="contact section-shell">
+            <div class="contact-layout reveal">
+                <div class="contact-copy">
+                    <p class="eyebrow">{{ $contact?->eyebrow ?: 'Contact' }}</p>
+                    <h2>{{ $contact?->title ?: "Let's Work Together" }}</h2>
+                    <p>{{ $contact?->subtitle ?: 'Kirim nama, email, dan pesan kamu. Semua pesan akan masuk ke admin panel.' }}</p>
+
+                    @if ($contact?->content)
+                        <div class="rich-text contact-description">
+                            {!! $contact->content !!}
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" placeholder="What's this about?" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" rows="6" placeholder="Tell me about your project..." required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
+                    @endif
+
+                    @if ($setting('contact_email'))
+                        <a href="mailto:{{ $setting('contact_email') }}" class="contact-email">{{ $setting('contact_email') }}</a>
+                    @endif
+
+                    @if ($socialLinks->isNotEmpty() || $contactLinks->isNotEmpty())
+                        <div class="social-row">
+                            @foreach ($socialLinks->merge($contactLinks) as $link)
+                                <a href="{{ $link->url }}" target="_blank" rel="noopener">
+                                    @if ($link->icon)
+                                        <span>{{ $link->icon }}</span>
+                                    @endif
+                                    {{ $link->label }}
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+                <form action="{{ route('contact.submit') }}" method="POST" class="contact-form" novalidate>
+                    @csrf
+
+                    @if (session('contact_success'))
+                        <div class="form-alert form-alert-success">{{ session('contact_success') }}</div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="form-alert form-alert-error">
+                            <strong>Pesannya belum bisa dikirim.</strong>
+                            <span>Cek lagi field yang ditandai ya.</span>
+                        </div>
+                    @endif
+
+                    <label>
+                        <span>Nama</span>
+                        <input type="text" name="name" value="{{ old('name') }}" placeholder="Nama kamu" required>
+                        @error('name')
+                            <small>{{ $message }}</small>
+                        @enderror
+                    </label>
+
+                    <label>
+                        <span>Email</span>
+                        <input type="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com" required>
+                        @error('email')
+                            <small>{{ $message }}</small>
+                        @enderror
+                    </label>
+
+                    <label>
+                        <span>Pesan</span>
+                        <textarea name="message" rows="6" placeholder="Tulis pesan kamu di sini..." required>{{ old('message') }}</textarea>
+                        @error('message')
+                            <small>{{ $message }}</small>
+                        @enderror
+                    </label>
+
+                    <button type="submit" class="button button-primary form-submit">
+                        {{ $contact?->button_label ?: 'Kirim Pesan' }}
+                    </button>
                 </form>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-left">
-                    <p>&copy;</p>
-                </div>
-                <div class="footer-right">
-                    <a href="#privacy">Privacy Policy</a>
-                    <a href="#terms">Terms of Use</a>
-                    <a href="#sitemap">Sitemap</a>
-                    <a href="https://templatemo.com" target="_blank" rel="noopener nofollow">Provided by TemplateMo</a>
-                </div>
+        <p>© {{ now()->year }} {{ $setting('site_name', 'RYFDLLAH') }}. Built with Laravel + Filament.</p>
+        @if ($footerLinks->isNotEmpty())
+            <div>
+                @foreach ($footerLinks as $link)
+                    <a href="{{ $link->url }}">{{ $link->label }}</a>
+                @endforeach
             </div>
-        </div>
+        @endif
     </footer>
 
-<script src="{{ asset('front/templatemo-personal-javascripts.js') }}"></script>
-
+    <script src="{{ asset('front/portfolio-modern.js') }}"></script>
 </body>
-</html> 
+</html>
